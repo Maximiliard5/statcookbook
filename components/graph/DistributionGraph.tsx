@@ -17,8 +17,10 @@ import {
 import { useRouter } from 'next/navigation'
 import Dagre from '@dagrejs/dagre'
 import { distributionNodes, relationshipEdges, DistributionNodeData } from '@/data/distribution-relationships'
+import { distributionPositions } from '@/data/distribution-positions'
 import { DistributionNodeComponent } from './DistributionNode'
 import { SpecialCaseEdge, LimitingEdge, TransformationEdge, BayesianEdge, DEFAULT_MARKER_END } from './RelationshipEdge'
+import { GraphCanvasDev } from './edit'
 
 const NODE_WIDTH = 180
 const NODE_HEIGHT = 62
@@ -61,11 +63,14 @@ const baseEdges: Edge[] = relationshipEdges.map(e => ({
   target: e.target,
   type: e.relationshipType,
   label: e.label,
-  data: { property: e.property, highlighted: false } as Record<string, unknown>,
+  data: { highlighted: false } as Record<string, unknown>,
   markerEnd: DEFAULT_MARKER_END,
 }))
 
-const layoutedNodes = applyDagreLayout(baseNodes, baseEdges)
+const allPositioned = distributionNodes.every(d => distributionPositions[d.id] !== undefined)
+const layoutedNodes = allPositioned
+  ? baseNodes.map(n => ({ ...n, position: distributionPositions[n.id] }))
+  : applyDagreLayout(baseNodes, baseEdges)
 
 // ── Inner canvas (needs ReactFlowProvider above it) ─────────────────────────
 
@@ -74,7 +79,7 @@ type Props = {
   typeFilter: 'all' | 'discrete' | 'continuous'
 }
 
-function GraphCanvas({ searchQuery, typeFilter }: Props) {
+function GraphCanvasBase({ searchQuery, typeFilter }: Props) {
   const router = useRouter()
   const [nodes, , onNodesChange] = useNodesState(layoutedNodes)
   const [edges, , onEdgesChange] = useEdgesState(baseEdges)
@@ -116,6 +121,7 @@ function GraphCanvas({ searchQuery, typeFilter }: Props) {
         data: {
           ...(n.data as Record<string, unknown>),
           highlighted: hoveredNodeId === n.id,
+          isEditMode: false,
         },
       }
     }),
@@ -176,9 +182,9 @@ function GraphCanvas({ searchQuery, typeFilter }: Props) {
       nodesDraggable
       nodesConnectable={false}
       deleteKeyCode={null}
-      className="bg-white"
+      className="bg-white dark:bg-gray-950"
     >
-      <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#e5e7eb" />
+      <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--bg-dot-color, #e5e7eb)" />
       <Controls showInteractive={false} className="!border !border-gray-200 !rounded-lg !shadow-sm" />
       <MiniMap
         nodeColor={n => {
@@ -198,7 +204,9 @@ function GraphCanvas({ searchQuery, typeFilter }: Props) {
 export function DistributionGraph({ searchQuery, typeFilter }: Props) {
   return (
     <ReactFlowProvider>
-      <GraphCanvas searchQuery={searchQuery} typeFilter={typeFilter} />
+      {process.env.NODE_ENV === 'development'
+        ? <GraphCanvasDev searchQuery={searchQuery} typeFilter={typeFilter} initialNodes={layoutedNodes} initialEdges={baseEdges} />
+        : <GraphCanvasBase searchQuery={searchQuery} typeFilter={typeFilter} />}
     </ReactFlowProvider>
   )
 }

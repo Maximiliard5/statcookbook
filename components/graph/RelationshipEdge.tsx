@@ -7,8 +7,9 @@ import {
   getBezierPath,
   MarkerType,
 } from '@xyflow/react'
+import { KatexSpan } from '@/components/KatexSpan'
 
-type EdgeData = { property?: string; highlighted?: boolean }
+type EdgeData = { highlighted?: boolean }
 
 function makeEdgeComponent(
   stroke: string,
@@ -60,11 +61,8 @@ function makeEdgeComponent(
                 transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               }}
             >
-              <span className="text-[9px] bg-white border border-gray-200 rounded px-1 py-0.5 text-gray-600 shadow-sm whitespace-nowrap">
-                {label as string}
-                {d?.property && (
-                  <span className="ml-1 text-blue-400">[{d.property}]</span>
-                )}
+              <span className="text-[9px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-1 py-0.5 text-gray-600 dark:text-gray-300 shadow-sm whitespace-nowrap">
+                <KatexSpan src={label as string} />
               </span>
             </div>
           </EdgeLabelRenderer>

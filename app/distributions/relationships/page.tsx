@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { GraphLegend } from '@/components/graph/GraphLegend'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { distributionNodes, relationshipEdges } from '@/data/distribution-relationships'
 
 const DistributionGraph = dynamic(
@@ -27,30 +28,33 @@ export default function RelationshipsPage() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white dark:bg-gray-950">
       {/* Header */}
-      <div className="border-b border-gray-100 px-6 py-4">
-        <h1 className="text-xl font-semibold text-gray-900 tracking-tight">
-          Univariate Distribution Relationships
-        </h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {nodeCount} distributions · {edgeCount} relationships ·{' '}
-          <span className="italic">
-            Interactive version of{' '}
-            <a
-              href="https://doi.org/10.1198/000313008X270448"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              Leemis &amp; McQueston (2008)
-            </a>
-          </span>
-        </p>
+      <div className="border-b border-gray-100 dark:border-gray-800 px-6 py-4 flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
+            Univariate Distribution Relationships
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            {nodeCount} distributions · {edgeCount} relationships ·{' '}
+            <span className="italic">
+              Interactive version of{' '}
+              <a
+                href="https://doi.org/10.1198/000313008X270448"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Leemis &amp; McQueston (2008)
+              </a>
+            </span>
+          </p>
+        </div>
+        <ThemeToggle />
       </div>
 
       {/* Controls */}
-      <div className="border-b border-gray-100 px-6 py-2.5 flex flex-wrap items-center gap-4">
+      <div className="border-b border-gray-100 dark:border-gray-800 px-6 py-2.5 flex flex-wrap items-center gap-4">
         {/* Search */}
         <div className="relative">
           <svg
@@ -72,12 +76,12 @@ export default function RelationshipsPage() {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Filter distributions…"
-            className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-md w-52 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 placeholder-gray-400"
+            className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 rounded-md w-52 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 placeholder-gray-400"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
               aria-label="Clear search"
             >
               ×
@@ -94,8 +98,8 @@ export default function RelationshipsPage() {
               className={[
                 'px-3 py-1 rounded-md border transition-colors duration-100 capitalize',
                 typeFilter === f
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400',
+                  ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100'
+                  : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500',
               ].join(' ')}
             >
               {f}
@@ -104,13 +108,13 @@ export default function RelationshipsPage() {
         </div>
 
         {/* Instructions hint */}
-        <p className="text-[11px] text-gray-400 ml-auto hidden sm:block">
+        <p className="text-[11px] text-gray-400 dark:text-gray-500 ml-auto hidden sm:block">
           Hover a node to highlight its connections · Click to open its page
         </p>
       </div>
 
       {/* Legend */}
-      <div className="border-b border-gray-100 px-6 py-2">
+      <div className="border-b border-gray-100 dark:border-gray-800 px-6 py-2">
         <GraphLegend />
       </div>
 
